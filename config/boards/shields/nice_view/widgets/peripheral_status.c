@@ -45,13 +45,19 @@ static void draw_battery_percent(lv_obj_t *canvas,
     lv_draw_label_dsc_t label_dsc;
     init_label_dsc(&label_dsc,
                    LVGL_FOREGROUND,
-                   &lv_font_montserrat_16,
-                   LV_TEXT_ALIGN_RIGHT);
+                   &lv_font_montserrat_10,   // smaller = fits real battery box
+                   LV_TEXT_ALIGN_CENTER);
 
+    /*
+     * Battery widget reference frame:
+     * width ~32px, height ~12–14px
+     *
+     * We place text centered inside that same region.
+     */
     lv_canvas_draw_text(canvas,
-                        90,
-                        0,
-                        60,
+                        0,      // x start of battery widget
+                        2,      // matches top offset of battery rect
+                        32,     // same width as battery icon
                         &label_dsc,
                         buf);
 }
