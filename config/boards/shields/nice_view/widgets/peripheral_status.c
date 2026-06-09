@@ -45,7 +45,7 @@ static void draw_battery_percent(lv_obj_t *canvas,
     lv_draw_label_dsc_t label_dsc;
     init_label_dsc(&label_dsc,
                    LVGL_FOREGROUND,
-                   &lv_font_montserrat_10,   // smaller = fits real battery box
+                   &lv_font_montserrat_16,   // smaller = fits real battery box
                    LV_TEXT_ALIGN_CENTER);
 
     /*
