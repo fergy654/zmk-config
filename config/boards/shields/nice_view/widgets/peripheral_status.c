@@ -32,6 +32,30 @@ struct peripheral_status_state {
     bool connected;
 };
 
+static void draw_battery_percent(lv_obj_t *canvas,
+                                 const struct status_state *state) {
+    char buf[16];
+
+    if (state->charging) {
+        snprintf(buf, sizeof(buf), "%d%% ⚡", state->battery);
+    } else {
+        snprintf(buf, sizeof(buf), "%d%%", state->battery);
+    }
+
+    lv_draw_label_dsc_t label_dsc;
+    init_label_dsc(&label_dsc,
+                   LVGL_FOREGROUND,
+                   &lv_font_montserrat_16,
+                   LV_TEXT_ALIGN_RIGHT);
+
+    lv_canvas_draw_text(canvas,
+                        90,
+                        0,
+                        60,
+                        &label_dsc,
+                        buf);
+}
+
 static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_state *state) {
     lv_obj_t *canvas = lv_obj_get_child(widget, 0);
 
@@ -44,24 +68,7 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
     lv_canvas_draw_rect(canvas, 0, 0, CANVAS_SIZE, CANVAS_SIZE, &rect_black_dsc);
 
     // Draw battery
-    char buf[16];
-
-    if (state->charging) {
-        snprintf(buf, sizeof(buf), "%d%% ⚡", state->battery);
-    } else {
-        snprintf(buf, sizeof(buf), "%d%%", state->battery);
-    }
-
-    lv_draw_label_dsc_t label_dsc;
-    init_label_dsc(&label_dsc, LVGL_FOREGROUND, &lv_font_montserrat_16, LV_TEXT_ALIGN_RIGHT);
-
-    /* Right-align battery text (matches original layout intent) */
-    lv_canvas_draw_text(canvas,
-                        90,   // x position (adjust if needed)
-                        0,    // y position
-                        60,   // width
-                        &label_dsc,
-                        buf);
+    draw_battery_percent(canvas, state);
 
     // Draw output status
     lv_canvas_draw_text(canvas, 0, 0, CANVAS_SIZE, &label_dsc,
