@@ -36,11 +36,7 @@ static void draw_battery_percent(lv_obj_t *canvas,
                                  const struct status_state *state) {
     char buf[16];
 
-    if (state->charging) {
-        snprintf(buf, sizeof(buf), "%d%% ⚡", state->battery);
-    } else {
-        snprintf(buf, sizeof(buf), "%d%%", state->battery);
-    }
+    snprintf(buf, sizeof(buf), "%d%%", state->battery);
 
     lv_draw_label_dsc_t label_dsc;
     init_label_dsc(&label_dsc,
