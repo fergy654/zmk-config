@@ -46,6 +46,36 @@ struct wpm_status_state {
     uint8_t wpm;
 };
 
+static void draw_battery_percent(lv_obj_t *canvas,
+                                 const struct status_state *state) {
+    char buf[16];
+
+    if (state->charging) {
+        snprintf(buf, sizeof(buf), "%d%% ⚡", state->battery);
+    } else {
+        snprintf(buf, sizeof(buf), "%d%%", state->battery);
+    }
+
+    lv_draw_label_dsc_t label_dsc;
+    init_label_dsc(&label_dsc,
+                   LVGL_FOREGROUND,
+                   &lv_font_montserrat_16,   // smaller = fits real battery box
+                   LV_TEXT_ALIGN_CENTER);
+
+    /*
+     * Battery widget reference frame:
+     * width ~32px, height ~12–14px
+     *
+     * We place text centered inside that same region.
+     */
+    lv_canvas_draw_text(canvas,
+                        0,      // x start of battery widget
+                        2,      // matches top offset of battery rect
+                        32,     // same width as battery icon
+                        &label_dsc,
+                        buf);
+}
+
 static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_state *state) {
     lv_obj_t *canvas = lv_obj_get_child(widget, 0);
 
@@ -64,7 +94,8 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
     lv_canvas_draw_rect(canvas, 0, 0, CANVAS_SIZE, CANVAS_SIZE, &rect_black_dsc);
 
     // Draw battery
-    draw_battery(canvas, state);
+    draw_battery_percent(canvas, state);
+
 
     // Draw output status
     char output_text[10] = {};
@@ -89,36 +120,36 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
     lv_canvas_draw_text(canvas, 0, 0, CANVAS_SIZE, &label_dsc, output_text);
 
     // Draw WPM
-    lv_canvas_draw_rect(canvas, 0, 21, 68, 42, &rect_white_dsc);
-    lv_canvas_draw_rect(canvas, 1, 22, 66, 40, &rect_black_dsc);
+    // lv_canvas_draw_rect(canvas, 0, 21, 68, 42, &rect_white_dsc);
+    // lv_canvas_draw_rect(canvas, 1, 22, 66, 40, &rect_black_dsc);
 
-    char wpm_text[6] = {};
-    snprintf(wpm_text, sizeof(wpm_text), "%d", state->wpm[9]);
-    lv_canvas_draw_text(canvas, 42, 52, 24, &label_dsc_wpm, wpm_text);
+    // char wpm_text[6] = {};
+    // snprintf(wpm_text, sizeof(wpm_text), "%d", state->wpm[9]);
+    // lv_canvas_draw_text(canvas, 42, 52, 24, &label_dsc_wpm, wpm_text);
 
-    int max = 0;
-    int min = 256;
+    // int max = 0;
+    // int min = 256;
 
-    for (int i = 0; i < 10; i++) {
-        if (state->wpm[i] > max) {
-            max = state->wpm[i];
-        }
-        if (state->wpm[i] < min) {
-            min = state->wpm[i];
-        }
-    }
+    // for (int i = 0; i < 10; i++) {
+    //     if (state->wpm[i] > max) {
+    //         max = state->wpm[i];
+    //     }
+    //     if (state->wpm[i] < min) {
+    //         min = state->wpm[i];
+    //     }
+    // }
 
-    int range = max - min;
-    if (range == 0) {
-        range = 1;
-    }
+    // int range = max - min;
+    // if (range == 0) {
+    //     range = 1;
+    // }
 
-    lv_point_t points[10];
-    for (int i = 0; i < 10; i++) {
-        points[i].x = 2 + i * 7;
-        points[i].y = 60 - (state->wpm[i] - min) * 36 / range;
-    }
-    lv_canvas_draw_line(canvas, points, 10, &line_dsc);
+    // lv_point_t points[10];
+    // for (int i = 0; i < 10; i++) {
+    //     points[i].x = 2 + i * 7;
+    //     points[i].y = 60 - (state->wpm[i] - min) * 36 / range;
+    // }
+    // lv_canvas_draw_line(canvas, points, 10, &line_dsc);
 
     // Rotate canvas
     rotate_canvas(canvas, cbuf);
